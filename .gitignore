@@ -1,0 +1,16 @@
+# Maven build output
+target/
+
+# Maven wrapper JAR (not needed with only-script distribution)
+.mvn/wrapper/maven-wrapper.jar
+
+# IDE files
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+
+# OS files
+.DS_Store
+Thumbs.db
