@@ -1,6 +1,7 @@
 package com.samwang.flexirate.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 /**
  * Represents a user in the billing input.
@@ -8,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
     private String user_id;
+    @JsonDeserialize(using = StrictBooleanDeserializer.class)
     private Boolean is_enterprise;
     private String timezone;
 

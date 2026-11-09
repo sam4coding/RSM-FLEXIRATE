@@ -1,5 +1,13 @@
 package com.samwang.flexirate;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.samwang.flexirate.model.BillingInput;
+import com.samwang.flexirate.model.BillingOutput;
+
 import java.time.Clock;
 
 /**
@@ -9,9 +17,13 @@ import java.time.Clock;
 public class FlexiRateCalculatorApi {
 
     private final Clock clock;
+    private final ObjectMapper mapper;
 
     public FlexiRateCalculatorApi(Clock clock) {
         this.clock = clock;
+        this.mapper = new ObjectMapper()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .enable(SerializationFeature.INDENT_OUTPUT);
     }
 
     public FlexiRateCalculatorApi() {
@@ -23,9 +35,44 @@ public class FlexiRateCalculatorApi {
      *
      * @param inputJson the full billing input JSON
      * @return output JSON document
-     * @throws IllegalArgumentException on FATAL parse errors (malformed JSON, missing arrays)
+     * @throws FatalBillingException on FATAL parse errors (malformed JSON, missing arrays)
      */
     public String calculate(String inputJson) {
-        throw new UnsupportedOperationException("not implemented");
+        if (inputJson == null || inputJson.isBlank()) {
+            throw new FatalBillingException("Input JSON cannot be null or blank");
+        }
+
+        JsonNode tree;
+        try {
+            tree = mapper.readTree(inputJson);
+        } catch (JsonProcessingException e) {
+            throw new FatalBillingException("Malformed JSON input: " + e.getOriginalMessage(), e);
+        }
+
+        if (tree == null || !tree.isObject()) {
+            throw new FatalBillingException("Top-level document must be a JSON object");
+        }
+        if (!tree.has("users") || !tree.get("users").isArray()) {
+            throw new FatalBillingException("Missing or invalid 'users' array");
+        }
+        if (!tree.has("events") || !tree.get("events").isArray()) {
+            throw new FatalBillingException("Missing or invalid 'events' array");
+        }
+
+        BillingInput input;
+        try {
+            input = mapper.treeToValue(tree, BillingInput.class);
+        } catch (JsonProcessingException e) {
+            throw new FatalBillingException("Failed to bind input JSON to model: " + e.getOriginalMessage(), e);
+        }
+
+        BillingCalculator calculator = new BillingCalculator(clock);
+        BillingOutput output = calculator.calculate(input);
+
+        try {
+            return mapper.writeValueAsString(output);
+        } catch (JsonProcessingException e) {
+            throw new FatalBillingException("Failed to serialize output JSON: " + e.getOriginalMessage(), e);
+        }
     }
 }
