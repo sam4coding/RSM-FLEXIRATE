@@ -104,3 +104,20 @@ recovered verbatim, the file itself says so.
 - Two employer questions were still unanswered at submission — billing
   rounding confirmation (Velislava) and the overlap note (Viktor); the
   assumptions taken are flagged in DECISIONS.md (#9, #15).
+
+## Post-review hardening (2026-11-10)
+
+A critical re-review of the shipped code found no pricing errors — the
+per-unit core, the rounding rules and the output invariants all held. It did
+find four input-robustness defects (a malformed billing_cycle crashed with an
+uncaught exception; item-level duration type errors escalated to a
+whole-document FATAL; null array items caused an NPE; duplicate user_id
+entries were read inconsistently) and one efficiency hazard (unit expansion
+ran over out-of-cycle time). All were fixed in small, separately verified
+steps and locked by a new RobustnessTest suite (13 tests; 74 total). The
+Antigravity session assigned to this round worked in a stale clone and
+reported commits that never reached the remote (including two hashes that do
+not exist); the one real change it left behind contained an inverted
+clipping formula and was caught in review before ever being committed. The
+round was re-done under manager direction, verified on the remote after
+every push, and is recorded in transcript 01.

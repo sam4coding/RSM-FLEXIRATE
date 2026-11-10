@@ -64,3 +64,35 @@ Suite counts progression:
 | E5 | `warning_overlappingEvents_bothBilled_warningOnLater` | Test asserted overlap warning on later event. | Renamed to `overlappingEvents_billedAsConcurrentUsage_noWarning`; asserted `warning_count = 0` per revised DECISIONS #15. | Yes — policy revision, see #15 |
 | E6 | `exampleB_enterprise_110h_offPeak_total90` (renamed `…total98`), `enterpriseVsNonEnterprise_110h_contrast` | SPEC §6 Example B's expected total ($90.00) omitted the 10 billed hours that spill into tier_2 once the 10 grace hours consume tier_1 progression — the example's own hours did not add up (grace 10h + tier_1 90h + tier_2 0h = 100h ≠ 110h of usage), violating the SPEC §5 tier-hours invariant | Corrected the expected total to $98.00 (tier_1 90h × $1.00 + tier_2 10h × $0.80), asserted tier_2 = 10h / $8.00, and corrected the SPEC §6 Example B text to match | No — the pricing rule is unchanged; the example's arithmetic now matches it (cf. Example D, $415, which was already consistent) |
 
+## Robustness fixes (2026-11-10)
+
+After the first full build, a critical re-review of the code (no pricing errors
+found — the per-unit core, rounding and invariants all held) produced four
+input-robustness fixes and one efficiency fix, each landed green and locked by
+the new RobustnessTest suite (13 tests; 74 total):
+
+- A malformed billing_cycle now fails as a clean FATAL
+  ("Invalid billing_cycle: ...") instead of an uncaught parse exception.
+- A duration_minutes of the wrong type (fractional, non-numeric string,
+  out-of-range) now skips only its own event (reason
+  "missing or invalid duration_minutes") instead of failing the whole
+  document at binding time — the same treatment is_enterprise already had.
+- Null elements in the users/events arrays can no longer crash the run
+  (a null event counts as a skipped item with reason "missing event_id").
+- Duplicate user_id entries: the first valid entry wins consistently for
+  both timestamp conversion and pricing (previously the map and the bill
+  could read different entries).
+- Events are clipped to the billed cycle before unit expansion, so work is
+  proportional to in-cycle units. (An earlier automated attempt at this
+  change inverted the clipping arithmetic; it was caught in review before
+  ever being committed — see SESSION_LOG.md.)
+
+Complexity and memory: parsing currently materialises the full JSON tree plus
+the bound model (Jackson databind), so memory grows with document size;
+pricing expands in-cycle units per user (at most 2,976 quarter-hours per
+event stream per month, multiplied by concurrency). The production path
+addresses both axes: stream the input with Jackson's streaming JsonParser —
+already a dependency, the Java analogue of Python's ijson — making parse
+memory O(1) in document size, and replace unit materialisation with segment
+arithmetic counting so pricing memory scales with event count rather than
+unit count.

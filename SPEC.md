@@ -109,12 +109,13 @@ An event is an ERROR if any of:
     (the same record delivered twice must not double-bill);
   - same id, **different** payload: **both** records are billed; the later one logs a WARNING
     `duplicate event_id, different payload` (two usages that happen to share an id).
-- **Overlapping events (Assumption — interim default; question sent to Viktor, reply pending)**:
-  for the same user, an event whose interval intersects an earlier billed event's interval is
-  billed **in full, independently**, and logs a WARNING `overlaps event <id>`.
+- **Overlapping events (Assumption; raised with Viktor by email 2026-11-09, no reply as of this writing)**:
+  overlapping events for the same user are ordinary concurrent usage (API usage is parallel by
+  nature): every valid event is billed **in full, independently**; overlaps raise no warning and
+  intervals are never merged. Warnings are reserved for data-quality anomalies (duplicate event_id).
 
 ### FATAL — the document itself cannot be processed
-Malformed top-level JSON, or `users`/`events` missing or not arrays: no output JSON is produced;
+Malformed top-level JSON, `users`/`events` missing or not arrays, or `billing_cycle` present but not a valid YYYY-MM: no output JSON is produced;
 the CLI exits non-zero with a clear stderr message. A FATAL is never disguised as item errors.
 
 The CLI prints one stderr line per skipped item and per warning, each with its reason.
