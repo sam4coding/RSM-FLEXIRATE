@@ -1,6 +1,7 @@
 package com.samwang.flexirate.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 /**
  * Represents a pre-aggregated usage event in the billing input.
@@ -10,6 +11,7 @@ public class UsageEvent {
     private String event_id;
     private String user_id;
     private String timestamp;
+    @JsonDeserialize(using = TolerantDurationDeserializer.class)
     private Integer duration_minutes;
 
     public UsageEvent() {}

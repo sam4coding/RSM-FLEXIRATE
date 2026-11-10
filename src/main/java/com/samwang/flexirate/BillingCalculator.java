@@ -329,7 +329,7 @@ public class BillingCalculator {
         }
 
         if (event.getDuration_minutes() == null) {
-            return "missing duration_minutes";
+            return "missing or invalid duration_minutes";
         }
         if (event.getDuration_minutes() <= 0) {
             return "duration_minutes <= 0";
