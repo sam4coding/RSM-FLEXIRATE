@@ -23,14 +23,14 @@ recovered verbatim, the file itself says so.
 
 | File | Covers | Notes |
 |---|---|---|
-| `01-claude-secretary-manager-tester.md` | The whole project, 2026-11-09/10 | Planning, SPEC v1→v3.3, instructions to all programmers, test/rule reviews, errata analysis, T4 code, close-out |
+| `01-muse-secretary-manager-tester.md` | The whole project, 2026-11-09/10 | Planning, SPEC v1→v3.3, instructions to all programmers, test/rule reviews, errata analysis, T4 code, close-out The assistant is Muse (Meta's agent); it was mislabeled 'Claude' in early working documents — corrected to Muse throughout the repo documents on 2026-11-10. This file's body is the client's unedited export. |
 | `02-antigravity-T0.md` | T0 skeleton | |
 | `02-antigravity-T1.md` | T1 frozen tests | Committed by Sam by hand after the session's quota died mid-commit |
 | `02-antigravity-T2.md` | T2 completion | Includes the file-by-file audit of Gemini CLI's uncommitted work |
 | `02-antigravity-T3.md` | T3 pricing + errata | Session ended by quota exhaustion mid-diagnosis |
 | `02-antigravity-T4+5.md` | T5 support tasks | Third Antigravity account; includes the full A–L verification table |
 | `03-chatgpt-reviewer.md` | All review rounds | 12-point adversarial review of SPEC v2; errata/overlap rulings of 2026-11-09 21:18 |
-| `04-gemini-cli-T2.md` | Gemini CLI's T2 attempt | **Reconstruction**: the CLI's own session records could not be located under `~/.gemini`; rebuilt from project records and disclosed as such in the file |
+| `04-gemini-cli-T2.md` | Gemini CLI's T2 attempt | The session's full chat recording was never preserved on disk; only the CLI's logs.json index and two short check-session recordings survive under ~/.gemini/tmp/rsm-flexirate/. The file reproduces those records verbatim and documents the session from the project record — see its header |
 
 ## Process rules
 
