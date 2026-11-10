@@ -88,11 +88,12 @@ class FlexiRateAcceptanceTest {
     }
 
     /**
-     * SPEC §6 Example B — Enterprise, 110 h, all off-peak → $90.00.
-     * Enterprise grace counts toward progression → only 90h in tier_1.
+     * SPEC §6 Example B — Enterprise, 110 h, all off-peak → $98.00.
+     * Enterprise grace counts toward progression → tier_1 90h × $1 = $90, 
+     * remaining 10h spill into tier_2 × $0.80 = $8
      */
     @Test
-    void exampleB_enterprise_110h_offPeak_total90() throws Exception {
+    void exampleB_enterprise_110h_offPeak_total98() throws Exception {
         String json = """
                 {
                   "billing_cycle": "2026-11",
@@ -110,13 +111,14 @@ class FlexiRateAcceptanceTest {
         JsonNode root = parse(json);
 
         assertEquals(0,     hdr(root).path("error_count").asInt());
-        assertEquals(90.00, res(root, 0).path("total_cost").asDouble(),           0.001);
+        assertEquals(98.00, res(root, 0).path("total_cost").asDouble(),           0.001);
         assertEquals(10.00, tb(root, 0).path("grace").path("hours").asDouble(),   0.001);
         assertEquals(0.00,  tb(root, 0).path("grace").path("cost").asDouble(),    0.001);
         // Enterprise: grace counts toward progression → 90h remain for tier_1
         assertEquals(90.00, tb(root, 0).path("tier_1").path("hours").asDouble(),  0.001);
         assertEquals(90.00, tb(root, 0).path("tier_1").path("cost").asDouble(),   0.001);
-        assertEquals(0.00,  tb(root, 0).path("tier_2").path("hours").asDouble(),  0.001);
+        assertEquals(10.00, tb(root, 0).path("tier_2").path("hours").asDouble(),  0.001);
+        assertEquals(8.00,  tb(root, 0).path("tier_2").path("cost").asDouble(),   0.001);
         assertEquals(0.00,  sur(root, 0).path("peak_hours").asDouble(),           0.001);
         assertEquals(0.00,  sur(root, 0).path("peak_surcharge_total").asDouble(), 0.001);
     }
@@ -1413,7 +1415,7 @@ class FlexiRateAcceptanceTest {
 
     /**
      * Enterprise vs non-enterprise explicit contrast (the B/A contrast).
-     * Same 110h input: enterprise → $90, non-enterprise → $100.
+     * Same 110h input: enterprise → $98, non-enterprise → $100.
      */
     @Test
     void enterpriseVsNonEnterprise_110h_contrast() throws Exception {
@@ -1448,7 +1450,7 @@ class FlexiRateAcceptanceTest {
         JsonNode entRoot    = parse(ent);
         JsonNode nonEntRoot = parse(nonEnt);
 
-        assertEquals(90.00,  res(entRoot,    0).path("total_cost").asDouble(), 0.001);
+        assertEquals(98.00,  res(entRoot,    0).path("total_cost").asDouble(), 0.001);
         assertEquals(100.00, res(nonEntRoot, 0).path("total_cost").asDouble(), 0.001);
         // Enterprise has fewer tier_1 hours (grace eats into progression)
         assertEquals(90.00,  tb(entRoot,    0).path("tier_1").path("hours").asDouble(), 0.001);

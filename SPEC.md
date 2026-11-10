@@ -158,7 +158,7 @@ Definitions and invariants (shape is ours to define — Confirmed, Velislava; do
 
 ## 6. Worked sanity examples (must be reproduced by tests)
 - **A. Non-enterprise, 110h, all off-peak**: grace 10h free (no tier progress) + tier_1 100h × $1 = **$100.00**.
-- **B. Enterprise, 110h, all off-peak**: grace 10h free but counts → tier_1 remaining 90h × $1 = **$90.00**
+- **B. Enterprise, 110h, all off-peak**: grace 10h free but counts toward progression → tier_1 90h × $1 = $90 + tier_2 10h × $0.80 = $8 → $98.00 (Errata E6)**$98.00**
   (tier_1.hours = 90, grace.hours = 10 — the grace hours are not in tier_1.hours).
 - **C. Non-enterprise, 20h all at peak**: grace 10h free, tier_1 10h × $1 × 1.2 = **$12.00**,
   peak_surcharge_total = $2.00, peak_hours = 10.

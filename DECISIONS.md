@@ -43,13 +43,17 @@ _(This section is part of the interview defence: the errors, who caught them, an
 - **Muse (manager)**: SPEC v1/v2 claimed "with 15-minute chunks all values are exact cents anyway" while also allowing durations that are not multiples of 15 — internally contradictory, and still imprecise after Viktor's ruling because a tier_3 unit is $0.125. Caught by ChatGPT's review; fixed by the explicit rounding policy in #9.
 - **Muse (manager)**: proposed atZone DST defaults (silently shifting nonexistent times / picking the earlier offset) and whole-event cycle attribution by start instant. Both were superseded in the Sam + ChatGPT discussion by stricter, more defensible rules (#13 strict rejection, #12 per-unit attribution) and Muse adopted theirs.
 - **Process note**: Sam's instruction "proposal first, no file edits until I confirm" was followed for this v3 revision — the proposal, Viktor's confirmations, and Sam's rulings (incl. the duplicate policy) all predate these edits.
+- **Muse (manager)**: SPEC §6 Example B (enterprise, 110h) stated a total of $90.00. That figure silently dropped the 10 billed hours that spill into tier_2 once grace consumes 10h of tier_1 progression (90h × $1.00 + 10h × $0.80 = $98.00), and it violated SPEC §5's tier-hours invariant (10 + 90 + 0 ≠ 110). Present since SPEC v1; ChatGPT's engineering review did not catch it either. Exposed on 2026-11-09 when Antigravity's implementation produced $98.00 and exactly the two Example B tests failed (57 run, 2 failures) — while Example D, the same ladder at 510h, already agreed with the corrected arithmetic ($415) and passed. Fixed by errata E6; the rule (#4, #5) is unchanged.
+
 
 ## Test errata (2026-11-09)
 
 Suite counts progression:
 - Before errata: 57 tests run / 23 failures (T2 state, pricing stubbed).
 - T3 initial draft run: 57 tests run / 14 failures (all 14 attributable to T1 test encoding contradictions and outdated assertions).
-- Post errata & T3 completion: 57 tests run / 0 failures expected.
+- After E1–E5 errata, with the T3 implementation: 57 tests run / 2 failures (both Example B — see E6).
+- After E6: 57 tests run / 0 failures.
+
 
 | Errata | Test(s) | Problem | Fix | Business expectation changed? |
 |---|---|---|---|---|
@@ -58,3 +62,5 @@ Suite counts progression:
 | E3 | `exampleC`, `exampleF_peakBoundarySplit` | `tier_1.cost` asserted as $12.00 (C) and $1.10 (F), including peak surcharge, contradicting SPEC §5 invariant (`sum(tier costs) + surcharge = total_cost`). | Updated assertions so tier line carries base cost only: `tier_1.cost` 12.00 → 10.00 (C) and 1.10 → 1.00 (F). | No |
 | E4 | `graceBoundaryPlusOneUnit` | Event started at 00:00:00Z with duration 615 min, pushing the 41st unit to 10:00Z (inside peak window). | Changed timestamp to `2026-11-02T17:00:00Z` so all units remain off-peak. | No |
 | E5 | `warning_overlappingEvents_bothBilled_warningOnLater` | Test asserted overlap warning on later event. | Renamed to `overlappingEvents_billedAsConcurrentUsage_noWarning`; asserted `warning_count = 0` per revised DECISIONS #15. | Yes — policy revision, see #15 |
+| E6 | `exampleB_enterprise_110h_offPeak_total90` (renamed `…total98`), `enterpriseVsNonEnterprise_110h_contrast` | SPEC §6 Example B's expected total ($90.00) omitted the 10 billed hours that spill into tier_2 once the 10 grace hours consume tier_1 progression — the example's own hours did not add up (grace 10h + tier_1 90h + tier_2 0h = 100h ≠ 110h of usage), violating the SPEC §5 tier-hours invariant | Corrected the expected total to $98.00 (tier_1 90h × $1.00 + tier_2 10h × $0.80), asserted tier_2 = 10h / $8.00, and corrected the SPEC §6 Example B text to match | No — the pricing rule is unchanged; the example's arithmetic now matches it (cf. Example D, $415, which was already consistent) |
+
