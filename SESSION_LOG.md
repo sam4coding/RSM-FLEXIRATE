@@ -1,75 +1,106 @@
-# SESSION LOG — index of the AI interaction for this submission (v3)
 
-Requirement from the task: "You may use any AI tools. Include your prompts/session log with
-the submission." Velislava clarified on 2026-11-09 (08:57) that she wants to see HOW the work
-with AI was done — "The more you show, the better I can judge. If you crop it, I will decide
-you are hiding something." This file is therefore the INDEX and timeline only. The complete,
-uncropped transcripts live in `ai-transcripts/`, **self-packaged by each AI** (arrangement set
-by Sam on 2026-11-09: the conversations are too long to搬运 between tools, so each AI exports
-its own). Summaries appear only in this index, never as a substitute for a transcript.
+# Session Log — Flexi-Rate Usage Calculator
 
-## The team (final lineup, set by Sam 2026-11-09)
-- **Muse** — secretary + project manager + tester: kickoff package (SPEC / DECISIONS / TASKS),
-  environment setup guidance, question drafting, acceptance review of every task, this index.
-  Transcript: `ai-transcripts/01-claude-secretary-manager-tester.md` (exported by Muse from
-  the dedicated side chat "Implement Flexi-Rate usage calculator", 2026-11-09 07:30 → submission).
-  Two challenge-related exchanges also happened in the earlier "RSM Coding Challenge 备战" chat
-  on 2026-11-09 (09:48 — whether Muse can access the ThinkPad's local files directly: it
-  cannot; 09:51 — whether to add GitHub CI: at that point decided as close-out only — that
-  decision was superseded at 15:14 the same day by per-step CI gates, see the timeline below).
-  They are listed here so nothing is hidden; the substance is reflected in this index.
-- **ChatGPT** — judge / adversarial reviewer: reviewed handoff v2 plus all Velislava/Viktor
-  correspondence; produced the 12-item engineering-review list that drove the v3 revision and,
-  with Sam, the consolidated rule table (per-unit cycle attribution, strict DST rejection,
-  reject-invalid-user, unknown-fields-ignored, overlap question to Viktor).
-  Transcript: `ai-transcripts/03-chatgpt-reviewer.md` (exported by ChatGPT itself at Sam's request).
-- **Antigravity's AI** (Claude or Gemini — model choice recorded in its transcript header) —
-  programmer: implements T0–T4 in the repo, one fresh conversation per task.
-  Transcripts: `ai-transcripts/02-antigravity-T0.md`, `…-T1.md`, … — at the end of each task
-  conversation, before closing it, Sam instructs Antigravity to write that conversation's full
-  transcript into the repo; if it cannot reproduce everything it must state what is missing.
-- **Gemini CLI** — rehearsal-verified backup programmer. As of this index it has NOT been used
-  on the real challenge; if that changes, its terminal session will be captured and added here
-  honestly rather than written in advance.
-Passwords and sign-in codes were entered through a secure vault / on Sam's own devices and
-never appear in any transcript.
+The employer asked for full, uncropped AI transcripts ("If you crop it, I
+will decide you are hiding something"). This file indexes every AI session
+that touched the project and summarises how the work ran. Nothing in
+`ai-transcripts/` is edited or excerpted; where a record could not be
+recovered verbatim, the file itself says so.
 
-## Timeline
-- **2026-11-09 ~07:30 EST — task received.** Sam pasted the task text to Muse. Muse produced
-  kickoff package v1: SPEC (worked examples A–F), DECISIONS (12 assumptions), TASKS (T0–T5),
-  draft questions for the task document, this log's starter.
-- **08:33–08:57 — questions and employer answers.** Sam posted the drafted questions as
-  comments in the task document; Velislava answered all five (UTC-only logic — reversing
-  Muse's timezone assumption; quarter-hour start validity; header envelope confirmed +
-  per-item reason log; output shape free if numbers add up; full uncropped transcripts
-  required). Package revised to v2 the same morning (examples G, H added).
-- **Morning — environment (Sam's ThinkPad, guided by Muse).** Java 17 found; OpenJDK 21.0.12.1
-  installed via apt and set as default; Maven 3.8.7 installed (verified running on Java 21).
-  A side episode, kept in the transcript unedited: Muse's browser could not read the document
-  comments (the commenting account cannot pass Google verification today — its recovery phone
-  is a discontinued number), so Sam read Velislava's replies in his own session and pasted
-  them to Muse verbatim.
-- **11:54 — Viktor's email clarifications** (answers to Sam's Q1–Q3): events are pre-aggregated;
-  duration must be a positive multiple of 15, otherwise invalid, with such cases counted in the
-  output header; units spanning the peak boundary are charged per unit ("15 minutes at base
-  rate, 15 at peak usage rate").
-- **Afternoon — ChatGPT review round.** Sam gave ChatGPT handoff v2 and all employer
-  correspondence. Outcomes: a 12-item engineering-review list for the four plan documents;
-  a consolidated rule table (see DECISIONS #10–#16 for the adopted rules); a precision question
-  to Velislava (pending) and an overlapping-events question to Viktor (pending).
-- **Afternoon — Muse's revision proposal, Sam's rulings.** Muse accepted all 12 review items
-  (and added its own cross-document findings), then waited as instructed ("proposal first, no
-  file edits until I confirm"). Sam ruled: duplicate event_id = refined policy (DECISIONS #10);
-  error levels ERROR / WARNING / FATAL adopted; files to be revised ("改") after his review.
-- **2026-11-09 — v3 package (this revision).** SPEC / DECISIONS / TASKS / SESSION_LOG rewritten
-  per the above: unit model, per-unit cycle attribution, strict DST, three error levels,
-  Decision Status column (Confirmed / Assumption / Recommended), test coverage A–L.
-- **2026-11-09 15:14 — CI gates adopted.** Sam proposed gating every task on GitHub Actions
-  (each task already ends in a commit + push, and each new Antigravity conversation is a
-  natural checkpoint). Muse reviewed and added the per-step expected-state refinement —
-  T0 green; T1 red-by-design (assertion failures only); T2 validation classes green with a
-  strictly shrinking failure count; T3–T5 strictly green — because a tests-first plan cannot
-  be green at every step. TASKS.md updated accordingly; the 09:51 "CI at close-out only"
-  decision is superseded. The JDK 21 workflow file ships with the kickoff package as ci.yml.
+## Roles
 
-## (append below, in order, as T0–T5 proceed)
+| Role | Who |
+|---|---|
+| Direction, decisions, final audit | Sam Wang (human) |
+| Secretary, manager, tester; programmer from T4 | Muse |
+| Independent reviewer / judge | ChatGPT |
+| Programmer, T0–T1 | Antigravity — Claude Sonnet 4.6 (Thinking) |
+| Programmer, T2 (first attempt) | Gemini CLI — gemini-3-flash-preview |
+| Programmer, T2 (completion) and T3 | Antigravity — Gemini (Flash tier) |
+| T5 support (transcript reconstruction, A–L verification) | Antigravity — third account |
+
+## Transcript index (`ai-transcripts/`)
+
+| File | Covers | Notes |
+|---|---|---|
+| `01-claude-secretary-manager-tester.md` | The whole project, 2026-11-09/10 | Planning, SPEC v1→v3.3, instructions to all programmers, test/rule reviews, errata analysis, T4 code, close-out |
+| `02-antigravity-T0.md` | T0 skeleton | |
+| `02-antigravity-T1.md` | T1 frozen tests | Committed by Sam by hand after the session's quota died mid-commit |
+| `02-antigravity-T2.md` | T2 completion | Includes the file-by-file audit of Gemini CLI's uncommitted work |
+| `02-antigravity-T3.md` | T3 pricing + errata | Session ended by quota exhaustion mid-diagnosis |
+| `02-antigravity-T5.md` | T5 support tasks | Third Antigravity account; includes the full A–L verification table |
+| `03-chatgpt-reviewer.md` | All review rounds | 12-point adversarial review of SPEC v2; errata/overlap rulings of 2026-11-09 21:18 |
+| `04-gemini-cli-T2.md` | Gemini CLI's T2 attempt | **Reconstruction**: the CLI's own session records could not be located under `~/.gemini`; rebuilt from project records and disclosed as such in the file |
+
+## Process rules
+
+- Acceptance tests were written and frozen (T1) before the implementation;
+  they were never weakened to make code pass. Encoding errors found in the
+  tests themselves were fixed through a documented errata procedure
+  (DECISIONS.md, E1–E6) in dedicated commits touching no production code.
+- Per-step CI gates: T0 green; T1 red by assertion failures only; T2
+  failures only decreasing; T3 and later strictly green.
+- One task per commit, format `type(scope): summary`, pushed after
+  acceptance; the manager verified git history, diffs and CI independently.
+
+## Timeline (2026-11-09, EST)
+
+- 07:30 — Task received from Velislava Gergelcheva (Google Doc).
+- 08:46–08:57 — Velislava answers all five clarification comments: all
+  limits UTC-based (user timezone only converts offset-less timestamps);
+  starts must align to a quarter hour; output shape free if it reconciles;
+  header envelope confirmed; full uncropped transcripts required.
+- Morning — SPEC v2 → v3 after ChatGPT's 12-point adversarial review
+  (15-minute unit model, examples extended to A–L, 21 numbered decisions).
+- 11:54 — Viktor's email: events are pre-aggregated; duration must be a
+  positive multiple of 15; per-15-minute-unit peak split confirmed.
+- ~16:30 — T0 done (skeleton, Maven Wrapper, CI). GitHub Actions was
+  initially blocked by a $0 budget on the account; a payment method was
+  added and the budget raised to $10.
+- T1 — 48 acceptance tests frozen against stubs; CI red by design,
+  assertion failures only.
+- Programmer quota saga — Antigravity's Claude pool was exhausted on the
+  first account (mid-T1) and on a second account (after T1). Gemini CLI
+  started T2, lost its quota, auto-switched to a model with no quota and
+  retried 10,142 times with 0 tokens before Sam killed it (session
+  822271c1-8077-4ace-b3a2-0415bedf552a). Antigravity's Gemini audited the
+  CLI's uncommitted tree file-by-file and completed T2: 57 tests run,
+  23 failures — all pricing, as designed.
+- T3 — Antigravity stopped on three contradictions between the frozen tests
+  and the SPEC instead of forcing green. Manager review + ChatGPT's ruling
+  produced test errata E1–E5 (the tests had encoded "all off-peak / all
+  peak" premises as single continuous events, which cannot exist under the
+  confirmed unit model) and the overlap-policy revision (concurrent usage
+  billed in full, no warning). Antigravity executed the errata and the
+  pricing core, then its quota was exhausted at 21:46, mid-diagnosis.
+  Sam pushed the errata commit (c8a2a0f) and a wip checkpoint (0447ba1).
+- E6 — The 2 remaining failures exposed an arithmetic error in the SPEC
+  itself: Example B's expected $90 (present since SPEC v1, missed by two
+  AI reviewers) makes 10 billed hours vanish; the correct total is $98.
+  Approved by Sam; history rebuilt as 941fc7e (errata E6) + cdade16
+  (feat(core)) and force-pushed with lease. T3 accepted: 57/57 green,
+  CI run #9 success.
+- 22:38 — A third Antigravity account was logged in, both quota pools at
+  100%; reserved for T5 support tasks.
+- T4 — The manager wrote the CLI (Main, CLI tests, sample input, shade
+  packaging); Sam applied it. 61/61 green. The jar smoke test on
+  sample-input.json matched the manager's independent precomputation
+  exactly (u1 $1.10, u2 $6.00, error_count 1, warning_count 1, both stderr
+  lines). A generated output.json was briefly committed and removed
+  (49b7082).
+- T5 (2026-11-10, early hours) — Antigravity (third account) reconstructed
+  the Gemini CLI record (04) and independently re-ran every SPEC §6
+  example A–L through the built jar: 15/15 rows match, including the
+  sub-cases (full table in `02-antigravity-T5.md`). Sam exported the
+  ChatGPT transcript (03). README, DECISIONS and this log finalised;
+  repository link sent to Viktor (cc Velislava) ahead of the 08:00
+  deadline.
+
+## Verification summary
+
+- 61 automated tests, all green locally and in CI.
+- Independent end-to-end re-run of all worked examples through the shipped
+  jar (above).
+- Two employer questions were still unanswered at submission — billing
+  rounding confirmation (Velislava) and the overlap note (Viktor); the
+  assumptions taken are flagged in DECISIONS.md (#9, #15).
