@@ -28,7 +28,7 @@ recovered verbatim, the file itself says so.
 | `02-antigravity-T1.md` | T1 frozen tests | Committed by Sam by hand after the session's quota died mid-commit |
 | `02-antigravity-T2.md` | T2 completion | Includes the file-by-file audit of Gemini CLI's uncommitted work |
 | `02-antigravity-T3.md` | T3 pricing + errata | Session ended by quota exhaustion mid-diagnosis |
-| `02-antigravity-T5.md` | T5 support tasks | Third Antigravity account; includes the full A–L verification table |
+| `02-antigravity-T4+5.md` | T5 support tasks | Third Antigravity account; includes the full A–L verification table |
 | `03-chatgpt-reviewer.md` | All review rounds | 12-point adversarial review of SPEC v2; errata/overlap rulings of 2026-11-09 21:18 |
 | `04-gemini-cli-T2.md` | Gemini CLI's T2 attempt | **Reconstruction**: the CLI's own session records could not be located under `~/.gemini`; rebuilt from project records and disclosed as such in the file |
 
@@ -91,7 +91,7 @@ recovered verbatim, the file itself says so.
 - T5 (2026-11-10, early hours) — Antigravity (third account) reconstructed
   the Gemini CLI record (04) and independently re-ran every SPEC §6
   example A–L through the built jar: 15/15 rows match, including the
-  sub-cases (full table in `02-antigravity-T5.md`). Sam exported the
+  sub-cases (full table in `02-antigravity-T4+5.md`). Sam exported the
   ChatGPT transcript (03). README, DECISIONS and this log finalised;
   repository link sent to Viktor (cc Velislava) ahead of the 08:00
   deadline.
