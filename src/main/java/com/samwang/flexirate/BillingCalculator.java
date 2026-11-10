@@ -3,6 +3,7 @@ package com.samwang.flexirate;
 import com.samwang.flexirate.model.*;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.*;
 import java.time.format.DateTimeParseException;
 import java.time.zone.ZoneRules;
@@ -11,7 +12,6 @@ import java.util.*;
 /**
  * Pure calculator core: BillingInput → BillingOutput.
  * Clock is injectable so tests can fix "current cycle" for omitted billing_cycle.
- * Pricing core stays stubbed in T2; implementation in T3.
  */
 public class BillingCalculator {
 
@@ -41,6 +41,7 @@ public class BillingCalculator {
             cycle = YearMonth.now(clock).toString();
         }
         header.setBilling_cycle(cycle);
+        YearMonth targetCycle = YearMonth.parse(cycle);
 
         // Step 1: User validation (DECISIONS #14)
         Map<String, User> validUsers = new HashMap<>();
@@ -51,12 +52,13 @@ public class BillingCalculator {
             }
         }
 
-        // Step 2: Event validation & duplicate policy (SPEC §4, DECISIONS #10, #11, #13)
+        // Step 2: Event validation & duplicate policy (SPEC §4, DECISIONS #10, #11, #13, #15)
         List<UsageEvent> inputEvents = input.getEvents() != null ? input.getEvents() : Collections.emptyList();
-        List<UsageEvent> eventsToBill = new ArrayList<>();
 
         // Duplicate tracking per (user_id, event_id): payload set
         Map<EventKey, Set<EventPayload>> seenPayloads = new HashMap<>();
+        // Billed events per user in input order
+        Map<String, List<ValidatedEvent>> billedEventsByUser = new HashMap<>();
 
         for (UsageEvent event : inputEvents) {
             String errorReason = getErrorReason(event, validUsers);
@@ -90,39 +92,30 @@ public class BillingCalculator {
                     warning.setReason("duplicate event_id, different payload");
                     header.getWarnings().add(warning);
                     payloads.add(payload);
-                    eventsToBill.add(event);
                 }
             } else {
                 Set<EventPayload> set = new HashSet<>();
                 set.add(payload);
                 seenPayloads.put(key, set);
-                eventsToBill.add(event);
             }
+
+            // Accepted for billing: parse timestamp to UTC Instant
+            User user = validUsers.get(event.getUser_id());
+            ParsedTimestamp parsed = parseTimestamp(event.getTimestamp(), user.getTimezone());
+            ValidatedEvent validEvent = new ValidatedEvent(event, parsed.instant(), event.getDuration_minutes());
+
+            // Concurrent usage (DECISIONS #15): overlapping events raise no warning and are billed in full
+            billedEventsByUser.computeIfAbsent(event.getUser_id(), k -> new ArrayList<>()).add(validEvent);
         }
 
-        // Step 3: Stubbed results for valid users (pricing implemented in T3)
+        // Step 3: Per-user pricing (SPEC §3, DECISIONS #4, #5, #6, #9, #12, #17, #18)
         List<UserBill> results = new ArrayList<>();
         Set<String> addedUserIds = new HashSet<>();
+
         for (User user : inputUsers) {
             String uid = user.getUser_id();
             if (validUsers.containsKey(uid) && addedUserIds.add(uid)) {
-                UserBill bill = new UserBill();
-                bill.setUser_id(uid);
-                bill.setTotal_cost(new BigDecimal("0.00"));
-
-                TierBreakdown breakdown = new TierBreakdown();
-                breakdown.setGrace(createTierLine("0.00"));
-                breakdown.setTier_1(createTierLine("1.00"));
-                breakdown.setTier_2(createTierLine("0.80"));
-                breakdown.setTier_3(createTierLine("0.50"));
-                bill.setTier_breakdown(breakdown);
-
-                SurchargeInfo surcharge = new SurchargeInfo();
-                surcharge.setPeak_hours(new BigDecimal("0.00"));
-                surcharge.setPeak_rate(new BigDecimal("0.20"));
-                surcharge.setPeak_surcharge_total(new BigDecimal("0.00"));
-                bill.setApplied_surcharges(surcharge);
-
+                UserBill bill = calculateUserBill(user, billedEventsByUser.getOrDefault(uid, Collections.emptyList()), targetCycle);
                 results.add(bill);
             }
         }
@@ -133,12 +126,138 @@ public class BillingCalculator {
         return output;
     }
 
-    private TierLine createTierLine(String rate) {
-        TierLine line = new TierLine();
-        line.setHours(new BigDecimal("0.00"));
-        line.setRate(new BigDecimal(rate));
-        line.setCost(new BigDecimal("0.00"));
-        return line;
+    private UserBill calculateUserBill(User user, List<ValidatedEvent> events, YearMonth targetCycle) {
+        // 1. Sort events chronologically by instant; ties broken by event_id
+        List<ValidatedEvent> sortedEvents = new ArrayList<>(events);
+        sortedEvents.sort(Comparator.comparing(ValidatedEvent::startInstant)
+                .thenComparing(e -> e.rawEvent().getEvent_id()));
+
+        // 2. Expand into 15-minute units and keep only units in target cycle (DECISIONS #12)
+        List<BillingUnit> keptUnits = new ArrayList<>();
+        for (ValidatedEvent ev : sortedEvents) {
+            int numUnits = ev.durationMinutes() / 15;
+            for (int u = 0; u < numUnits; u++) {
+                Instant unitStart = ev.startInstant().plus(Duration.ofMinutes(u * 15L));
+                YearMonth unitCycle = YearMonth.from(unitStart.atZone(ZoneOffset.UTC));
+                if (unitCycle.equals(targetCycle)) {
+                    keptUnits.add(new BillingUnit(unitStart, ev.rawEvent().getEvent_id()));
+                }
+            }
+        }
+
+        // Sort kept units chronologically
+        keptUnits.sort(Comparator.comparing(BillingUnit::startInstant)
+                .thenComparing(BillingUnit::eventId));
+
+        // 3. Price kept units
+        boolean isEnterprise = Boolean.TRUE.equals(user.getIs_enterprise());
+        int graceUnitsRemaining = 40; // 10h grace = 40 units
+        int progressionUnits = 0;
+
+        int graceUnitsBilled = 0;
+        int tier1UnitsBilled = 0;
+        int tier2UnitsBilled = 0;
+        int tier3UnitsBilled = 0;
+
+        BigDecimal tier1Cost = BigDecimal.ZERO;
+        BigDecimal tier2Cost = BigDecimal.ZERO;
+        BigDecimal tier3Cost = BigDecimal.ZERO;
+
+        int peakUnits = 0;
+        BigDecimal peakSurchargeTotal = BigDecimal.ZERO;
+
+        for (BillingUnit unit : keptUnits) {
+            LocalTime time = unit.startInstant().atZone(ZoneOffset.UTC).toLocalTime();
+            boolean isPeak = !time.isBefore(LocalTime.of(9, 0)) && time.isBefore(LocalTime.of(17, 0));
+
+            if (graceUnitsRemaining > 0) {
+                graceUnitsRemaining--;
+                graceUnitsBilled++;
+                if (isEnterprise) {
+                    progressionUnits++;
+                }
+                // Grace units bill $0.00 and never incur peak surcharge
+            } else {
+                BigDecimal unitBaseCost;
+                if (progressionUnits < 400) {
+                    // 0–100h: Tier 1 ($1.00/h -> $0.25/unit)
+                    unitBaseCost = new BigDecimal("0.25");
+                    tier1Cost = tier1Cost.add(unitBaseCost);
+                    tier1UnitsBilled++;
+                } else if (progressionUnits < 2000) {
+                    // 100–500h: Tier 2 ($0.80/h -> $0.20/unit)
+                    unitBaseCost = new BigDecimal("0.20");
+                    tier2Cost = tier2Cost.add(unitBaseCost);
+                    tier2UnitsBilled++;
+                } else {
+                    // 500h+: Tier 3 ($0.50/h -> $0.125/unit)
+                    unitBaseCost = new BigDecimal("0.125");
+                    tier3Cost = tier3Cost.add(unitBaseCost);
+                    tier3UnitsBilled++;
+                }
+
+                if (isPeak) {
+                    BigDecimal surchargePortion = unitBaseCost.multiply(new BigDecimal("0.20"));
+                    peakSurchargeTotal = peakSurchargeTotal.add(surchargePortion);
+                    peakUnits++;
+                }
+
+                progressionUnits++;
+            }
+        }
+
+        // 4. Assemble tier breakdown and surcharge (DECISIONS #9, #18, SPEC §5)
+        BigDecimal graceHours = BigDecimal.valueOf(graceUnitsBilled).multiply(new BigDecimal("0.25")).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal tier1Hours = BigDecimal.valueOf(tier1UnitsBilled).multiply(new BigDecimal("0.25")).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal tier2Hours = BigDecimal.valueOf(tier2UnitsBilled).multiply(new BigDecimal("0.25")).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal tier3Hours = BigDecimal.valueOf(tier3UnitsBilled).multiply(new BigDecimal("0.25")).setScale(2, RoundingMode.HALF_UP);
+
+        BigDecimal peakHours = BigDecimal.valueOf(peakUnits).multiply(new BigDecimal("0.25")).setScale(2, RoundingMode.HALF_UP);
+
+        TierLine graceLine = new TierLine();
+        graceLine.setHours(graceHours);
+        graceLine.setRate(new BigDecimal("0.00"));
+        graceLine.setCost(new BigDecimal("0.00"));
+
+        TierLine tier1Line = new TierLine();
+        tier1Line.setHours(tier1Hours);
+        tier1Line.setRate(new BigDecimal("1.00"));
+        tier1Line.setCost(tier1Cost.setScale(2, RoundingMode.HALF_UP));
+
+        TierLine tier2Line = new TierLine();
+        tier2Line.setHours(tier2Hours);
+        tier2Line.setRate(new BigDecimal("0.80"));
+        tier2Line.setCost(tier2Cost.setScale(2, RoundingMode.HALF_UP));
+
+        TierLine tier3Line = new TierLine();
+        tier3Line.setHours(tier3Hours);
+        tier3Line.setRate(new BigDecimal("0.50"));
+        tier3Line.setCost(tier3Cost.setScale(2, RoundingMode.HALF_UP));
+
+        TierBreakdown breakdown = new TierBreakdown();
+        breakdown.setGrace(graceLine);
+        breakdown.setTier_1(tier1Line);
+        breakdown.setTier_2(tier2Line);
+        breakdown.setTier_3(tier3Line);
+
+        SurchargeInfo surcharge = new SurchargeInfo();
+        surcharge.setPeak_hours(peakHours);
+        surcharge.setPeak_rate(new BigDecimal("0.20"));
+        surcharge.setPeak_surcharge_total(peakSurchargeTotal.setScale(2, RoundingMode.HALF_UP));
+
+        BigDecimal totalCost = graceLine.getCost()
+                .add(tier1Line.getCost())
+                .add(tier2Line.getCost())
+                .add(tier3Line.getCost())
+                .add(surcharge.getPeak_surcharge_total());
+
+        UserBill bill = new UserBill();
+        bill.setUser_id(user.getUser_id());
+        bill.setTotal_cost(totalCost);
+        bill.setTier_breakdown(breakdown);
+        bill.setApplied_surcharges(surcharge);
+
+        return bill;
     }
 
     private boolean isValidUser(User user) {
@@ -229,4 +348,8 @@ public class BillingCalculator {
     private record EventKey(String userId, String eventId) {}
 
     private record EventPayload(String timestamp, Integer durationMinutes) {}
+
+    private record ValidatedEvent(UsageEvent rawEvent, Instant startInstant, int durationMinutes) {}
+
+    private record BillingUnit(Instant startInstant, String eventId) {}
 }
