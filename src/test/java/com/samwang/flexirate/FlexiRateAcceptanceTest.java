@@ -62,8 +62,15 @@ class FlexiRateAcceptanceTest {
                 {
                   "billing_cycle": "2026-11",
                   "users":  [{"user_id":"u1","is_enterprise":false,"timezone":"UTC"}],
-                  "events": [{"event_id":"e1","user_id":"u1",
-                               "timestamp":"2026-11-02T00:00:00Z","duration_minutes":6600}]
+                  "events": [
+                    {"event_id":"e1","user_id":"u1","timestamp":"2026-11-02T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e2","user_id":"u1","timestamp":"2026-11-03T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e3","user_id":"u1","timestamp":"2026-11-04T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e4","user_id":"u1","timestamp":"2026-11-05T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e5","user_id":"u1","timestamp":"2026-11-06T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e6","user_id":"u1","timestamp":"2026-11-07T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e7","user_id":"u1","timestamp":"2026-11-08T17:00:00Z","duration_minutes":840}
+                  ]
                 }""";
         JsonNode root = parse(json);
 
@@ -90,8 +97,15 @@ class FlexiRateAcceptanceTest {
                 {
                   "billing_cycle": "2026-11",
                   "users":  [{"user_id":"u1","is_enterprise":true,"timezone":"UTC"}],
-                  "events": [{"event_id":"e1","user_id":"u1",
-                               "timestamp":"2026-11-02T00:00:00Z","duration_minutes":6600}]
+                  "events": [
+                    {"event_id":"e1","user_id":"u1","timestamp":"2026-11-02T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e2","user_id":"u1","timestamp":"2026-11-03T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e3","user_id":"u1","timestamp":"2026-11-04T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e4","user_id":"u1","timestamp":"2026-11-05T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e5","user_id":"u1","timestamp":"2026-11-06T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e6","user_id":"u1","timestamp":"2026-11-07T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e7","user_id":"u1","timestamp":"2026-11-08T17:00:00Z","duration_minutes":840}
+                  ]
                 }""";
         JsonNode root = parse(json);
 
@@ -119,8 +133,11 @@ class FlexiRateAcceptanceTest {
                 {
                   "billing_cycle": "2026-11",
                   "users":  [{"user_id":"u1","is_enterprise":false,"timezone":"UTC"}],
-                  "events": [{"event_id":"e1","user_id":"u1",
-                               "timestamp":"2026-11-03T09:00:00Z","duration_minutes":1200}]
+                  "events": [
+                    {"event_id":"e1","user_id":"u1","timestamp":"2026-11-03T09:00:00Z","duration_minutes":480},
+                    {"event_id":"e2","user_id":"u1","timestamp":"2026-11-04T09:00:00Z","duration_minutes":480},
+                    {"event_id":"e3","user_id":"u1","timestamp":"2026-11-05T09:00:00Z","duration_minutes":240}
+                  ]
                 }""";
         JsonNode root = parse(json);
 
@@ -129,7 +146,7 @@ class FlexiRateAcceptanceTest {
         assertEquals(10.00, tb(root, 0).path("grace").path("hours").asDouble(),   0.001);
         assertEquals(0.00,  tb(root, 0).path("grace").path("cost").asDouble(),    0.001);
         assertEquals(10.00, tb(root, 0).path("tier_1").path("hours").asDouble(),  0.001);
-        assertEquals(12.00, tb(root, 0).path("tier_1").path("cost").asDouble(),   0.001);
+        assertEquals(10.00, tb(root, 0).path("tier_1").path("cost").asDouble(),   0.001);
         assertEquals(0.00,  tb(root, 0).path("tier_2").path("hours").asDouble(),  0.001);
         assertEquals(10.00, sur(root, 0).path("peak_hours").asDouble(),           0.001);
         assertEquals(2.00,  sur(root, 0).path("peak_surcharge_total").asDouble(), 0.001);
@@ -146,8 +163,41 @@ class FlexiRateAcceptanceTest {
                 {
                   "billing_cycle": "2026-11",
                   "users":  [{"user_id":"u1","is_enterprise":true,"timezone":"UTC"}],
-                  "events": [{"event_id":"e1","user_id":"u1",
-                               "timestamp":"2026-11-02T00:00:00Z","duration_minutes":30600}]
+                  "events": [
+                    {"event_id":"b0","user_id":"u1","timestamp":"2026-11-01T00:00:00Z","duration_minutes":540},
+                    {"event_id":"b1","user_id":"u1","timestamp":"2026-11-01T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b2","user_id":"u1","timestamp":"2026-11-02T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b3","user_id":"u1","timestamp":"2026-11-03T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b4","user_id":"u1","timestamp":"2026-11-04T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b5","user_id":"u1","timestamp":"2026-11-05T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b6","user_id":"u1","timestamp":"2026-11-06T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b7","user_id":"u1","timestamp":"2026-11-07T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b8","user_id":"u1","timestamp":"2026-11-08T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b9","user_id":"u1","timestamp":"2026-11-09T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b10","user_id":"u1","timestamp":"2026-11-10T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b11","user_id":"u1","timestamp":"2026-11-11T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b12","user_id":"u1","timestamp":"2026-11-12T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b13","user_id":"u1","timestamp":"2026-11-13T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b14","user_id":"u1","timestamp":"2026-11-14T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b15","user_id":"u1","timestamp":"2026-11-15T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b16","user_id":"u1","timestamp":"2026-11-16T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b17","user_id":"u1","timestamp":"2026-11-17T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b18","user_id":"u1","timestamp":"2026-11-18T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b19","user_id":"u1","timestamp":"2026-11-19T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b20","user_id":"u1","timestamp":"2026-11-20T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b21","user_id":"u1","timestamp":"2026-11-21T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b22","user_id":"u1","timestamp":"2026-11-22T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b23","user_id":"u1","timestamp":"2026-11-23T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b24","user_id":"u1","timestamp":"2026-11-24T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b25","user_id":"u1","timestamp":"2026-11-25T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b26","user_id":"u1","timestamp":"2026-11-26T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b27","user_id":"u1","timestamp":"2026-11-27T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b28","user_id":"u1","timestamp":"2026-11-28T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b29","user_id":"u1","timestamp":"2026-11-29T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b30","user_id":"u1","timestamp":"2026-11-30T17:00:00Z","duration_minutes":420},
+                    {"event_id":"p1","user_id":"u1","timestamp":"2026-11-02T17:00:00Z","duration_minutes":960},
+                    {"event_id":"p2","user_id":"u1","timestamp":"2026-11-03T17:00:00Z","duration_minutes":840}
+                  ]
                 }""";
         JsonNode root = parse(json);
 
@@ -175,8 +225,41 @@ class FlexiRateAcceptanceTest {
                 {
                   "billing_cycle": "2026-11",
                   "users":  [{"user_id":"u1","is_enterprise":false,"timezone":"UTC"}],
-                  "events": [{"event_id":"e1","user_id":"u1",
-                               "timestamp":"2026-11-02T00:00:00Z","duration_minutes":30600}]
+                  "events": [
+                    {"event_id":"b0","user_id":"u1","timestamp":"2026-11-01T00:00:00Z","duration_minutes":540},
+                    {"event_id":"b1","user_id":"u1","timestamp":"2026-11-01T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b2","user_id":"u1","timestamp":"2026-11-02T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b3","user_id":"u1","timestamp":"2026-11-03T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b4","user_id":"u1","timestamp":"2026-11-04T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b5","user_id":"u1","timestamp":"2026-11-05T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b6","user_id":"u1","timestamp":"2026-11-06T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b7","user_id":"u1","timestamp":"2026-11-07T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b8","user_id":"u1","timestamp":"2026-11-08T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b9","user_id":"u1","timestamp":"2026-11-09T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b10","user_id":"u1","timestamp":"2026-11-10T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b11","user_id":"u1","timestamp":"2026-11-11T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b12","user_id":"u1","timestamp":"2026-11-12T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b13","user_id":"u1","timestamp":"2026-11-13T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b14","user_id":"u1","timestamp":"2026-11-14T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b15","user_id":"u1","timestamp":"2026-11-15T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b16","user_id":"u1","timestamp":"2026-11-16T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b17","user_id":"u1","timestamp":"2026-11-17T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b18","user_id":"u1","timestamp":"2026-11-18T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b19","user_id":"u1","timestamp":"2026-11-19T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b20","user_id":"u1","timestamp":"2026-11-20T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b21","user_id":"u1","timestamp":"2026-11-21T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b22","user_id":"u1","timestamp":"2026-11-22T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b23","user_id":"u1","timestamp":"2026-11-23T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b24","user_id":"u1","timestamp":"2026-11-24T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b25","user_id":"u1","timestamp":"2026-11-25T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b26","user_id":"u1","timestamp":"2026-11-26T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b27","user_id":"u1","timestamp":"2026-11-27T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b28","user_id":"u1","timestamp":"2026-11-28T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b29","user_id":"u1","timestamp":"2026-11-29T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b30","user_id":"u1","timestamp":"2026-11-30T17:00:00Z","duration_minutes":420},
+                    {"event_id":"p1","user_id":"u1","timestamp":"2026-11-02T17:00:00Z","duration_minutes":960},
+                    {"event_id":"p2","user_id":"u1","timestamp":"2026-11-03T17:00:00Z","duration_minutes":840}
+                  ]
                 }""";
         JsonNode root = parse(json);
 
@@ -216,7 +299,7 @@ class FlexiRateAcceptanceTest {
         assertEquals(10.00, tb(root, 0).path("grace").path("hours").asDouble(),  0.001);
         // All 4 units from e2 land in tier_1 (progression only 10h so far)
         assertEquals(1.00, tb(root, 0).path("tier_1").path("hours").asDouble(),  0.001);
-        assertEquals(1.10, tb(root, 0).path("tier_1").path("cost").asDouble(),   0.001);
+        assertEquals(1.00, tb(root, 0).path("tier_1").path("cost").asDouble(),   0.001);
         assertEquals(0.50, sur(root, 0).path("peak_hours").asDouble(),           0.001);
         assertEquals(0.10, sur(root, 0).path("peak_surcharge_total").asDouble(), 0.001);
     }
@@ -230,8 +313,15 @@ class FlexiRateAcceptanceTest {
                 {
                   "billing_cycle": "2026-11",
                   "users":  [{"user_id":"u1","is_enterprise":false,"timezone":"UTC"}],
-                  "events": [{"event_id":"e1","user_id":"u1",
-                               "timestamp":"2026-11-02T00:00:00Z","duration_minutes":6660}]
+                  "events": [
+                    {"event_id":"e1","user_id":"u1","timestamp":"2026-11-02T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e2","user_id":"u1","timestamp":"2026-11-03T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e3","user_id":"u1","timestamp":"2026-11-04T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e4","user_id":"u1","timestamp":"2026-11-05T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e5","user_id":"u1","timestamp":"2026-11-06T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e6","user_id":"u1","timestamp":"2026-11-07T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e7","user_id":"u1","timestamp":"2026-11-08T17:00:00Z","duration_minutes":900}
+                  ]
                 }""";
         // 111h = 10h grace + 100h tier_1 + 1h tier_2
         JsonNode root = parse(json);
@@ -251,8 +341,42 @@ class FlexiRateAcceptanceTest {
                 {
                   "billing_cycle": "2026-11",
                   "users":  [{"user_id":"u1","is_enterprise":false,"timezone":"UTC"}],
-                  "events": [{"event_id":"e1","user_id":"u1",
-                               "timestamp":"2026-11-02T00:00:00Z","duration_minutes":30660}]
+                  "events": [
+                    {"event_id":"b0","user_id":"u1","timestamp":"2026-11-01T00:00:00Z","duration_minutes":540},
+                    {"event_id":"b1","user_id":"u1","timestamp":"2026-11-01T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b2","user_id":"u1","timestamp":"2026-11-02T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b3","user_id":"u1","timestamp":"2026-11-03T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b4","user_id":"u1","timestamp":"2026-11-04T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b5","user_id":"u1","timestamp":"2026-11-05T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b6","user_id":"u1","timestamp":"2026-11-06T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b7","user_id":"u1","timestamp":"2026-11-07T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b8","user_id":"u1","timestamp":"2026-11-08T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b9","user_id":"u1","timestamp":"2026-11-09T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b10","user_id":"u1","timestamp":"2026-11-10T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b11","user_id":"u1","timestamp":"2026-11-11T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b12","user_id":"u1","timestamp":"2026-11-12T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b13","user_id":"u1","timestamp":"2026-11-13T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b14","user_id":"u1","timestamp":"2026-11-14T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b15","user_id":"u1","timestamp":"2026-11-15T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b16","user_id":"u1","timestamp":"2026-11-16T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b17","user_id":"u1","timestamp":"2026-11-17T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b18","user_id":"u1","timestamp":"2026-11-18T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b19","user_id":"u1","timestamp":"2026-11-19T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b20","user_id":"u1","timestamp":"2026-11-20T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b21","user_id":"u1","timestamp":"2026-11-21T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b22","user_id":"u1","timestamp":"2026-11-22T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b23","user_id":"u1","timestamp":"2026-11-23T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b24","user_id":"u1","timestamp":"2026-11-24T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b25","user_id":"u1","timestamp":"2026-11-25T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b26","user_id":"u1","timestamp":"2026-11-26T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b27","user_id":"u1","timestamp":"2026-11-27T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b28","user_id":"u1","timestamp":"2026-11-28T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b29","user_id":"u1","timestamp":"2026-11-29T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b30","user_id":"u1","timestamp":"2026-11-30T17:00:00Z","duration_minutes":420},
+                    {"event_id":"p1","user_id":"u1","timestamp":"2026-11-02T17:00:00Z","duration_minutes":960},
+                    {"event_id":"p2","user_id":"u1","timestamp":"2026-11-03T17:00:00Z","duration_minutes":840},
+                    {"event_id":"p3","user_id":"u1","timestamp":"2026-11-04T17:00:00Z","duration_minutes":60}
+                  ]
                 }""";
         // 511h = 10h grace + 100h tier_1 + 400h tier_2 + 1h tier_3
         JsonNode root = parse(json);
@@ -272,8 +396,15 @@ class FlexiRateAcceptanceTest {
                 {
                   "billing_cycle": "2026-11",
                   "users":  [{"user_id":"u1","is_enterprise":false,"timezone":"UTC"}],
-                  "events": [{"event_id":"e1","user_id":"u1",
-                               "timestamp":"2026-11-02T00:00:00Z","duration_minutes":5940}]
+                  "events": [
+                    {"event_id":"e1","user_id":"u1","timestamp":"2026-11-02T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e2","user_id":"u1","timestamp":"2026-11-03T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e3","user_id":"u1","timestamp":"2026-11-04T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e4","user_id":"u1","timestamp":"2026-11-05T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e5","user_id":"u1","timestamp":"2026-11-06T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e6","user_id":"u1","timestamp":"2026-11-07T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e7","user_id":"u1","timestamp":"2026-11-08T17:00:00Z","duration_minutes":180}
+                  ]
                 }""";
         // 99h = 10h grace + 89h tier_1; tier_2 = 0h
         JsonNode root = parse(json);
@@ -292,8 +423,41 @@ class FlexiRateAcceptanceTest {
                 {
                   "billing_cycle": "2026-11",
                   "users":  [{"user_id":"u1","is_enterprise":false,"timezone":"UTC"}],
-                  "events": [{"event_id":"e1","user_id":"u1",
-                               "timestamp":"2026-11-02T00:00:00Z","duration_minutes":29940}]
+                  "events": [
+                    {"event_id":"b0","user_id":"u1","timestamp":"2026-11-01T00:00:00Z","duration_minutes":540},
+                    {"event_id":"b1","user_id":"u1","timestamp":"2026-11-01T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b2","user_id":"u1","timestamp":"2026-11-02T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b3","user_id":"u1","timestamp":"2026-11-03T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b4","user_id":"u1","timestamp":"2026-11-04T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b5","user_id":"u1","timestamp":"2026-11-05T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b6","user_id":"u1","timestamp":"2026-11-06T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b7","user_id":"u1","timestamp":"2026-11-07T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b8","user_id":"u1","timestamp":"2026-11-08T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b9","user_id":"u1","timestamp":"2026-11-09T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b10","user_id":"u1","timestamp":"2026-11-10T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b11","user_id":"u1","timestamp":"2026-11-11T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b12","user_id":"u1","timestamp":"2026-11-12T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b13","user_id":"u1","timestamp":"2026-11-13T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b14","user_id":"u1","timestamp":"2026-11-14T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b15","user_id":"u1","timestamp":"2026-11-15T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b16","user_id":"u1","timestamp":"2026-11-16T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b17","user_id":"u1","timestamp":"2026-11-17T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b18","user_id":"u1","timestamp":"2026-11-18T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b19","user_id":"u1","timestamp":"2026-11-19T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b20","user_id":"u1","timestamp":"2026-11-20T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b21","user_id":"u1","timestamp":"2026-11-21T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b22","user_id":"u1","timestamp":"2026-11-22T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b23","user_id":"u1","timestamp":"2026-11-23T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b24","user_id":"u1","timestamp":"2026-11-24T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b25","user_id":"u1","timestamp":"2026-11-25T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b26","user_id":"u1","timestamp":"2026-11-26T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b27","user_id":"u1","timestamp":"2026-11-27T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b28","user_id":"u1","timestamp":"2026-11-28T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b29","user_id":"u1","timestamp":"2026-11-29T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b30","user_id":"u1","timestamp":"2026-11-30T17:00:00Z","duration_minutes":420},
+                    {"event_id":"p1","user_id":"u1","timestamp":"2026-11-02T17:00:00Z","duration_minutes":960},
+                    {"event_id":"p2","user_id":"u1","timestamp":"2026-11-03T17:00:00Z","duration_minutes":180}
+                  ]
                 }""";
         // 499h = 10h grace + 100h tier_1 + 389h tier_2; tier_3 = 0h
         // cost = 100×$1 + 389×$0.80 = $100 + $311.20 = $411.20
@@ -332,7 +496,7 @@ class FlexiRateAcceptanceTest {
                   "billing_cycle": "2026-11",
                   "users":  [{"user_id":"u1","is_enterprise":false,"timezone":"UTC"}],
                   "events": [{"event_id":"e1","user_id":"u1",
-                               "timestamp":"2026-11-02T00:00:00Z","duration_minutes":615}]
+                               "timestamp":"2026-11-02T17:00:00Z","duration_minutes":615}]
                 }""";
         // 41 units: 40 grace + 1 tier_1 off-peak = 0.25×$1 = $0.25
         JsonNode root = parse(json);
@@ -833,12 +997,12 @@ class FlexiRateAcceptanceTest {
     }
 
     /**
-     * SPEC §4 — Overlapping events for the same user.
-     * Both billed; later event logs WARNING "overlaps event <id>".
+     * Overlapping events for the same user represent ordinary concurrent API usage (DECISIONS #15):
+     * both billed in full independently, no warning raised.
      */
     @Test
-    void warning_overlappingEvents_bothBilled_warningOnLater() throws Exception {
-        // e1: 00:00Z–01:00Z (60 min). e2: 00:30Z–01:30Z (60 min). They overlap.
+    void overlappingEvents_billedAsConcurrentUsage_noWarning() throws Exception {
+        // e1: 00:00Z–01:00Z (60 min). e2: 00:30Z–01:30Z (60 min). Concurrent usage.
         String json = """
                 {
                   "billing_cycle": "2026-11",
@@ -850,13 +1014,9 @@ class FlexiRateAcceptanceTest {
                 }""";
         JsonNode root = parse(json);
         assertEquals(0, hdr(root).path("error_count").asInt());
-        assertEquals(1, hdr(root).path("warning_count").asInt());
+        assertEquals(0, hdr(root).path("warning_count").asInt());
         JsonNode warnings = hdr(root).path("warnings");
-        assertEquals(1, warnings.size());
-        // The later event (e2) logs the overlap warning
-        assertEquals("e2", warnings.get(0).path("event_id").asText());
-        assertTrue(warnings.get(0).path("reason").asText().toLowerCase().contains("overlaps"),
-                "warning reason should mention 'overlaps'");
+        assertEquals(0, warnings.size());
         // Both events billed: total 120min = 2h < grace; $0
         assertEquals(2.00, tb(root, 0).path("grace").path("hours").asDouble(), 0.001);
     }
@@ -967,7 +1127,38 @@ class FlexiRateAcceptanceTest {
                   "billing_cycle": "2026-11",
                   "users":  [{"user_id":"u1","is_enterprise":false,"timezone":"UTC"}],
                   "events": [
-                    {"event_id":"e1","user_id":"u1","timestamp":"2026-11-01T00:00:00Z","duration_minutes":30600},
+                    {"event_id":"a1","user_id":"u1","timestamp":"2026-11-01T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b1","user_id":"u1","timestamp":"2026-11-01T17:00:00Z","duration_minutes":960},
+                    {"event_id":"a2","user_id":"u1","timestamp":"2026-11-02T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b2","user_id":"u1","timestamp":"2026-11-02T17:00:00Z","duration_minutes":960},
+                    {"event_id":"a3","user_id":"u1","timestamp":"2026-11-03T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b3","user_id":"u1","timestamp":"2026-11-03T17:00:00Z","duration_minutes":960},
+                    {"event_id":"a4","user_id":"u1","timestamp":"2026-11-04T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b4","user_id":"u1","timestamp":"2026-11-04T17:00:00Z","duration_minutes":960},
+                    {"event_id":"a5","user_id":"u1","timestamp":"2026-11-05T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b5","user_id":"u1","timestamp":"2026-11-05T17:00:00Z","duration_minutes":960},
+                    {"event_id":"a6","user_id":"u1","timestamp":"2026-11-06T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b6","user_id":"u1","timestamp":"2026-11-06T17:00:00Z","duration_minutes":960},
+                    {"event_id":"a7","user_id":"u1","timestamp":"2026-11-07T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b7","user_id":"u1","timestamp":"2026-11-07T17:00:00Z","duration_minutes":960},
+                    {"event_id":"a8","user_id":"u1","timestamp":"2026-11-08T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b8","user_id":"u1","timestamp":"2026-11-08T17:00:00Z","duration_minutes":960},
+                    {"event_id":"a9","user_id":"u1","timestamp":"2026-11-09T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b9","user_id":"u1","timestamp":"2026-11-09T17:00:00Z","duration_minutes":960},
+                    {"event_id":"a10","user_id":"u1","timestamp":"2026-11-10T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b10","user_id":"u1","timestamp":"2026-11-10T17:00:00Z","duration_minutes":960},
+                    {"event_id":"a11","user_id":"u1","timestamp":"2026-11-11T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b11","user_id":"u1","timestamp":"2026-11-11T17:00:00Z","duration_minutes":960},
+                    {"event_id":"a12","user_id":"u1","timestamp":"2026-11-12T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b12","user_id":"u1","timestamp":"2026-11-12T17:00:00Z","duration_minutes":960},
+                    {"event_id":"a13","user_id":"u1","timestamp":"2026-11-13T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b13","user_id":"u1","timestamp":"2026-11-13T17:00:00Z","duration_minutes":960},
+                    {"event_id":"a14","user_id":"u1","timestamp":"2026-11-14T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b14","user_id":"u1","timestamp":"2026-11-14T17:00:00Z","duration_minutes":960},
+                    {"event_id":"a15","user_id":"u1","timestamp":"2026-11-15T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b15","user_id":"u1","timestamp":"2026-11-15T17:00:00Z","duration_minutes":960},
+                    {"event_id":"a16","user_id":"u1","timestamp":"2026-11-16T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b16","user_id":"u1","timestamp":"2026-11-16T17:00:00Z","duration_minutes":840},
                     {"event_id":"e2","user_id":"u1","timestamp":"2026-11-22T00:00:00Z","duration_minutes":15}
                   ]
                 }""";
@@ -995,7 +1186,38 @@ class FlexiRateAcceptanceTest {
                   "billing_cycle": "2026-11",
                   "users":  [{"user_id":"u1","is_enterprise":false,"timezone":"UTC"}],
                   "events": [
-                    {"event_id":"e1","user_id":"u1","timestamp":"2026-11-01T00:00:00Z","duration_minutes":30600},
+                    {"event_id":"a1","user_id":"u1","timestamp":"2026-11-01T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b1","user_id":"u1","timestamp":"2026-11-01T17:00:00Z","duration_minutes":960},
+                    {"event_id":"a2","user_id":"u1","timestamp":"2026-11-02T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b2","user_id":"u1","timestamp":"2026-11-02T17:00:00Z","duration_minutes":960},
+                    {"event_id":"a3","user_id":"u1","timestamp":"2026-11-03T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b3","user_id":"u1","timestamp":"2026-11-03T17:00:00Z","duration_minutes":960},
+                    {"event_id":"a4","user_id":"u1","timestamp":"2026-11-04T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b4","user_id":"u1","timestamp":"2026-11-04T17:00:00Z","duration_minutes":960},
+                    {"event_id":"a5","user_id":"u1","timestamp":"2026-11-05T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b5","user_id":"u1","timestamp":"2026-11-05T17:00:00Z","duration_minutes":960},
+                    {"event_id":"a6","user_id":"u1","timestamp":"2026-11-06T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b6","user_id":"u1","timestamp":"2026-11-06T17:00:00Z","duration_minutes":960},
+                    {"event_id":"a7","user_id":"u1","timestamp":"2026-11-07T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b7","user_id":"u1","timestamp":"2026-11-07T17:00:00Z","duration_minutes":960},
+                    {"event_id":"a8","user_id":"u1","timestamp":"2026-11-08T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b8","user_id":"u1","timestamp":"2026-11-08T17:00:00Z","duration_minutes":960},
+                    {"event_id":"a9","user_id":"u1","timestamp":"2026-11-09T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b9","user_id":"u1","timestamp":"2026-11-09T17:00:00Z","duration_minutes":960},
+                    {"event_id":"a10","user_id":"u1","timestamp":"2026-11-10T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b10","user_id":"u1","timestamp":"2026-11-10T17:00:00Z","duration_minutes":960},
+                    {"event_id":"a11","user_id":"u1","timestamp":"2026-11-11T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b11","user_id":"u1","timestamp":"2026-11-11T17:00:00Z","duration_minutes":960},
+                    {"event_id":"a12","user_id":"u1","timestamp":"2026-11-12T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b12","user_id":"u1","timestamp":"2026-11-12T17:00:00Z","duration_minutes":960},
+                    {"event_id":"a13","user_id":"u1","timestamp":"2026-11-13T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b13","user_id":"u1","timestamp":"2026-11-13T17:00:00Z","duration_minutes":960},
+                    {"event_id":"a14","user_id":"u1","timestamp":"2026-11-14T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b14","user_id":"u1","timestamp":"2026-11-14T17:00:00Z","duration_minutes":960},
+                    {"event_id":"a15","user_id":"u1","timestamp":"2026-11-15T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b15","user_id":"u1","timestamp":"2026-11-15T17:00:00Z","duration_minutes":960},
+                    {"event_id":"a16","user_id":"u1","timestamp":"2026-11-16T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b16","user_id":"u1","timestamp":"2026-11-16T17:00:00Z","duration_minutes":840},
                     {"event_id":"e2","user_id":"u1","timestamp":"2026-11-22T00:00:00Z","duration_minutes":15}
                   ]
                 }""";
@@ -1021,8 +1243,41 @@ class FlexiRateAcceptanceTest {
                 {
                   "billing_cycle": "2026-11",
                   "users":  [{"user_id":"u1","is_enterprise":true,"timezone":"UTC"}],
-                  "events": [{"event_id":"e1","user_id":"u1",
-                               "timestamp":"2026-11-02T00:00:00Z","duration_minutes":30600}]
+                  "events": [
+                    {"event_id":"b0","user_id":"u1","timestamp":"2026-11-01T00:00:00Z","duration_minutes":540},
+                    {"event_id":"b1","user_id":"u1","timestamp":"2026-11-01T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b2","user_id":"u1","timestamp":"2026-11-02T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b3","user_id":"u1","timestamp":"2026-11-03T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b4","user_id":"u1","timestamp":"2026-11-04T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b5","user_id":"u1","timestamp":"2026-11-05T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b6","user_id":"u1","timestamp":"2026-11-06T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b7","user_id":"u1","timestamp":"2026-11-07T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b8","user_id":"u1","timestamp":"2026-11-08T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b9","user_id":"u1","timestamp":"2026-11-09T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b10","user_id":"u1","timestamp":"2026-11-10T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b11","user_id":"u1","timestamp":"2026-11-11T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b12","user_id":"u1","timestamp":"2026-11-12T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b13","user_id":"u1","timestamp":"2026-11-13T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b14","user_id":"u1","timestamp":"2026-11-14T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b15","user_id":"u1","timestamp":"2026-11-15T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b16","user_id":"u1","timestamp":"2026-11-16T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b17","user_id":"u1","timestamp":"2026-11-17T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b18","user_id":"u1","timestamp":"2026-11-18T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b19","user_id":"u1","timestamp":"2026-11-19T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b20","user_id":"u1","timestamp":"2026-11-20T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b21","user_id":"u1","timestamp":"2026-11-21T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b22","user_id":"u1","timestamp":"2026-11-22T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b23","user_id":"u1","timestamp":"2026-11-23T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b24","user_id":"u1","timestamp":"2026-11-24T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b25","user_id":"u1","timestamp":"2026-11-25T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b26","user_id":"u1","timestamp":"2026-11-26T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b27","user_id":"u1","timestamp":"2026-11-27T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b28","user_id":"u1","timestamp":"2026-11-28T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b29","user_id":"u1","timestamp":"2026-11-29T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b30","user_id":"u1","timestamp":"2026-11-30T17:00:00Z","duration_minutes":420},
+                    {"event_id":"p1","user_id":"u1","timestamp":"2026-11-02T17:00:00Z","duration_minutes":960},
+                    {"event_id":"p2","user_id":"u1","timestamp":"2026-11-03T17:00:00Z","duration_minutes":840}
+                  ]
                 }""";
         JsonNode root = parse(json);
 
@@ -1078,8 +1333,15 @@ class FlexiRateAcceptanceTest {
                 {
                   "billing_cycle": "2026-11",
                   "users":  [{"user_id":"u1","is_enterprise":false,"timezone":"UTC"}],
-                  "events": [{"event_id":"e1","user_id":"u1",
-                               "timestamp":"2026-11-02T00:00:00Z","duration_minutes":6600}]
+                  "events": [
+                    {"event_id":"e1","user_id":"u1","timestamp":"2026-11-02T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e2","user_id":"u1","timestamp":"2026-11-03T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e3","user_id":"u1","timestamp":"2026-11-04T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e4","user_id":"u1","timestamp":"2026-11-05T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e5","user_id":"u1","timestamp":"2026-11-06T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e6","user_id":"u1","timestamp":"2026-11-07T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e7","user_id":"u1","timestamp":"2026-11-08T17:00:00Z","duration_minutes":840}
+                  ]
                 }""";
         JsonNode root = parse(json);
         double grace  = tb(root, 0).path("grace").path("hours").asDouble();
@@ -1100,8 +1362,41 @@ class FlexiRateAcceptanceTest {
                 {
                   "billing_cycle": "2026-11",
                   "users":  [{"user_id":"u1","is_enterprise":true,"timezone":"UTC"}],
-                  "events": [{"event_id":"e1","user_id":"u1",
-                               "timestamp":"2026-11-02T00:00:00Z","duration_minutes":30600}]
+                  "events": [
+                    {"event_id":"b0","user_id":"u1","timestamp":"2026-11-01T00:00:00Z","duration_minutes":540},
+                    {"event_id":"b1","user_id":"u1","timestamp":"2026-11-01T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b2","user_id":"u1","timestamp":"2026-11-02T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b3","user_id":"u1","timestamp":"2026-11-03T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b4","user_id":"u1","timestamp":"2026-11-04T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b5","user_id":"u1","timestamp":"2026-11-05T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b6","user_id":"u1","timestamp":"2026-11-06T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b7","user_id":"u1","timestamp":"2026-11-07T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b8","user_id":"u1","timestamp":"2026-11-08T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b9","user_id":"u1","timestamp":"2026-11-09T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b10","user_id":"u1","timestamp":"2026-11-10T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b11","user_id":"u1","timestamp":"2026-11-11T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b12","user_id":"u1","timestamp":"2026-11-12T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b13","user_id":"u1","timestamp":"2026-11-13T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b14","user_id":"u1","timestamp":"2026-11-14T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b15","user_id":"u1","timestamp":"2026-11-15T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b16","user_id":"u1","timestamp":"2026-11-16T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b17","user_id":"u1","timestamp":"2026-11-17T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b18","user_id":"u1","timestamp":"2026-11-18T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b19","user_id":"u1","timestamp":"2026-11-19T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b20","user_id":"u1","timestamp":"2026-11-20T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b21","user_id":"u1","timestamp":"2026-11-21T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b22","user_id":"u1","timestamp":"2026-11-22T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b23","user_id":"u1","timestamp":"2026-11-23T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b24","user_id":"u1","timestamp":"2026-11-24T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b25","user_id":"u1","timestamp":"2026-11-25T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b26","user_id":"u1","timestamp":"2026-11-26T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b27","user_id":"u1","timestamp":"2026-11-27T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b28","user_id":"u1","timestamp":"2026-11-28T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b29","user_id":"u1","timestamp":"2026-11-29T17:00:00Z","duration_minutes":960},
+                    {"event_id":"b30","user_id":"u1","timestamp":"2026-11-30T17:00:00Z","duration_minutes":420},
+                    {"event_id":"p1","user_id":"u1","timestamp":"2026-11-02T17:00:00Z","duration_minutes":960},
+                    {"event_id":"p2","user_id":"u1","timestamp":"2026-11-03T17:00:00Z","duration_minutes":840}
+                  ]
                 }""";
         JsonNode root = parse(json);
         double grace = tb(root, 0).path("grace").path("hours").asDouble();
@@ -1126,15 +1421,29 @@ class FlexiRateAcceptanceTest {
                 {
                   "billing_cycle": "2026-11",
                   "users":  [{"user_id":"u1","is_enterprise":true,"timezone":"UTC"}],
-                  "events": [{"event_id":"e1","user_id":"u1",
-                               "timestamp":"2026-11-02T00:00:00Z","duration_minutes":6600}]
+                  "events": [
+                    {"event_id":"e1","user_id":"u1","timestamp":"2026-11-02T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e2","user_id":"u1","timestamp":"2026-11-03T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e3","user_id":"u1","timestamp":"2026-11-04T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e4","user_id":"u1","timestamp":"2026-11-05T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e5","user_id":"u1","timestamp":"2026-11-06T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e6","user_id":"u1","timestamp":"2026-11-07T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e7","user_id":"u1","timestamp":"2026-11-08T17:00:00Z","duration_minutes":840}
+                  ]
                 }""";
         String nonEnt = """
                 {
                   "billing_cycle": "2026-11",
                   "users":  [{"user_id":"u1","is_enterprise":false,"timezone":"UTC"}],
-                  "events": [{"event_id":"e1","user_id":"u1",
-                               "timestamp":"2026-11-02T00:00:00Z","duration_minutes":6600}]
+                  "events": [
+                    {"event_id":"e1","user_id":"u1","timestamp":"2026-11-02T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e2","user_id":"u1","timestamp":"2026-11-03T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e3","user_id":"u1","timestamp":"2026-11-04T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e4","user_id":"u1","timestamp":"2026-11-05T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e5","user_id":"u1","timestamp":"2026-11-06T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e6","user_id":"u1","timestamp":"2026-11-07T17:00:00Z","duration_minutes":960},
+                    {"event_id":"e7","user_id":"u1","timestamp":"2026-11-08T17:00:00Z","duration_minutes":840}
+                  ]
                 }""";
         JsonNode entRoot    = parse(ent);
         JsonNode nonEntRoot = parse(nonEnt);

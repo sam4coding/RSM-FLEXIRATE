@@ -153,6 +153,7 @@ Definitions and invariants (shape is ours to define — Confirmed, Velislava; do
   hours attributed to this cycle for this user.
 - `applied_surcharges.peak_hours` = hours that **actually incurred** the surcharge (peak units
   billed at a tier; grace peak units excluded — they incurred nothing).
+- tier line cost = hours × rate (base only; peak surcharge is reported separately in applied_surcharges).
 - Invariant: sum of tier line costs + peak_surcharge_total = total_cost (guaranteed by §3.7).
 
 ## 6. Worked sanity examples (must be reproduced by tests)
