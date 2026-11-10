@@ -41,14 +41,23 @@ public class BillingCalculator {
             cycle = YearMonth.now(clock).toString();
         }
         header.setBilling_cycle(cycle);
-        YearMonth targetCycle = YearMonth.parse(cycle);
+        YearMonth targetCycle;
+        try {
+            targetCycle = YearMonth.parse(cycle);
+        } catch (DateTimeParseException e) {
+            throw new FatalBillingException("Invalid billing_cycle: " + cycle);
+        }
 
         // Step 1: User validation (DECISIONS #14)
         Map<String, User> validUsers = new HashMap<>();
         List<User> inputUsers = input.getUsers() != null ? input.getUsers() : Collections.emptyList();
         for (User user : inputUsers) {
+            if (user == null) {
+                continue;
+            }
             if (isValidUser(user)) {
-                validUsers.put(user.getUser_id(), user);
+                // Keep first valid entry for each user_id
+                validUsers.putIfAbsent(user.getUser_id(), user);
             }
         }
 
@@ -61,6 +70,14 @@ public class BillingCalculator {
         Map<String, List<ValidatedEvent>> billedEventsByUser = new HashMap<>();
 
         for (UsageEvent event : inputEvents) {
+            if (event == null) {
+                header.setError_count(header.getError_count() + 1);
+                SkippedItem skippedNull = new SkippedItem();
+                skippedNull.setEvent_id(null);
+                skippedNull.setReason("missing event_id");
+                header.getSkipped_items().add(skippedNull);
+                continue;
+            }
             String errorReason = getErrorReason(event, validUsers);
             if (errorReason != null) {
                 header.setError_count(header.getError_count() + 1);
@@ -113,9 +130,13 @@ public class BillingCalculator {
         Set<String> addedUserIds = new HashSet<>();
 
         for (User user : inputUsers) {
+            if (user == null) {
+                continue;
+            }
             String uid = user.getUser_id();
             if (validUsers.containsKey(uid) && addedUserIds.add(uid)) {
-                UserBill bill = calculateUserBill(user, billedEventsByUser.getOrDefault(uid, Collections.emptyList()), targetCycle);
+                User canonical = validUsers.get(uid);
+                UserBill bill = calculateUserBill(canonical, billedEventsByUser.getOrDefault(uid, Collections.emptyList()), targetCycle);
                 results.add(bill);
             }
         }
@@ -134,14 +155,23 @@ public class BillingCalculator {
 
         // 2. Expand into 15-minute units and keep only units in target cycle (DECISIONS #12)
         List<BillingUnit> keptUnits = new ArrayList<>();
+        // Clip events to the billing cycle before unit expansion for performance:
+        // generate only units whose start falls inside [cycleStart, cycleEnd).
+        Instant cycleStart = targetCycle.atDay(1).atStartOfDay(ZoneOffset.UTC).toInstant();
+        Instant cycleEnd = targetCycle.plusMonths(1).atDay(1).atStartOfDay(ZoneOffset.UTC).toInstant();
         for (ValidatedEvent ev : sortedEvents) {
-            int numUnits = ev.durationMinutes() / 15;
-            for (int u = 0; u < numUnits; u++) {
+            int totalUnits = ev.durationMinutes() / 15;
+            // Index of the first unit starting at or after cycleStart. Event starts are
+            // quarter-aligned and cycleStart is midnight UTC, so the division is exact;
+            // negative for events starting inside the cycle, clamped to 0.
+            long unitsBeforeCycle = Duration.between(ev.startInstant(), cycleStart).toMinutes() / 15;
+            int firstKept = (int) Math.max(0, Math.min(totalUnits, unitsBeforeCycle));
+            Instant firstKeptStart = ev.startInstant().plus(Duration.ofMinutes(firstKept * 15L));
+            long unitsUntilCycleEnd = Duration.between(firstKeptStart, cycleEnd).toMinutes() / 15;
+            int keptCount = (int) Math.max(0, Math.min(totalUnits - firstKept, unitsUntilCycleEnd));
+            for (int u = firstKept; u < firstKept + keptCount; u++) {
                 Instant unitStart = ev.startInstant().plus(Duration.ofMinutes(u * 15L));
-                YearMonth unitCycle = YearMonth.from(unitStart.atZone(ZoneOffset.UTC));
-                if (unitCycle.equals(targetCycle)) {
-                    keptUnits.add(new BillingUnit(unitStart, ev.rawEvent().getEvent_id()));
-                }
+                keptUnits.add(new BillingUnit(unitStart, ev.rawEvent().getEvent_id()));
             }
         }
 
