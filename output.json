@@ -1,0 +1,76 @@
+{
+  "header" : {
+    "error_count" : 1,
+    "warning_count" : 1,
+    "billing_cycle" : "2026-11",
+    "skipped_items" : [ {
+      "event_id" : "a4",
+      "reason" : "start not on a quarter hour"
+    } ],
+    "warnings" : [ {
+      "event_id" : "a2",
+      "reason" : "duplicate event_id, identical payload"
+    } ]
+  },
+  "results" : [ {
+    "user_id" : "u1",
+    "total_cost" : 1.10,
+    "tier_breakdown" : {
+      "grace" : {
+        "hours" : 10.00,
+        "rate" : 0.00,
+        "cost" : 0.00
+      },
+      "tier_1" : {
+        "hours" : 1.00,
+        "rate" : 1.00,
+        "cost" : 1.00
+      },
+      "tier_2" : {
+        "hours" : 0.00,
+        "rate" : 0.80,
+        "cost" : 0.00
+      },
+      "tier_3" : {
+        "hours" : 0.00,
+        "rate" : 0.50,
+        "cost" : 0.00
+      }
+    },
+    "applied_surcharges" : {
+      "peak_hours" : 0.50,
+      "peak_rate" : 0.20,
+      "peak_surcharge_total" : 0.10
+    }
+  }, {
+    "user_id" : "u2",
+    "total_cost" : 6.00,
+    "tier_breakdown" : {
+      "grace" : {
+        "hours" : 10.00,
+        "rate" : 0.00,
+        "cost" : 0.00
+      },
+      "tier_1" : {
+        "hours" : 6.00,
+        "rate" : 1.00,
+        "cost" : 6.00
+      },
+      "tier_2" : {
+        "hours" : 0.00,
+        "rate" : 0.80,
+        "cost" : 0.00
+      },
+      "tier_3" : {
+        "hours" : 0.00,
+        "rate" : 0.50,
+        "cost" : 0.00
+      }
+    },
+    "applied_surcharges" : {
+      "peak_hours" : 0.00,
+      "peak_rate" : 0.20,
+      "peak_surcharge_total" : 0.00
+    }
+  } ]
+}
